@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retrocisor — Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0d1117;
+    color: #e6edf3;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #e6edf3;
+  }
+
+  .logo span { color: #58a6ff; }
+
+  #connBadge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 13px;
+    color: #8b949e;
+  }
+
+  #connBadge .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #30363d;
+  }
+
+  #connBadge.live .dot { background: #3fb950; }
+  #connBadge.live span { color: #3fb950; }
+
+  /* status geral */
+  #statusBar {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #8b949e;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #statusBar .label { color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+  #statusVal { font-size: 15px; font-weight: 600; color: #3fb950; }
+
+  /* grid de cards */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 18px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: border-color .2s;
+  }
+
+  .card:hover { border-color: #58a6ff44; }
+
+  .card-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: #8b949e;
+    font-weight: 600;
+  }
+
+  .card-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #e6edf3;
+    line-height: 1;
+  }
+
+  .card-unit {
+    font-size: 13px;
+    color: #58a6ff;
+    font-weight: 500;
+  }
+
+  /* cores de alerta */
+  .card.warn  { border-color: #d29922; }
+  .card.warn .card-value  { color: #e3b341; }
+  .card.danger { border-color: #da3633; }
+  .card.danger .card-value { color: #f85149; }
+
+  .section-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: #8b949e;
+    margin: 20px 0 10px;
+    font-weight: 600;
+  }
+
+  footer {
+    margin-top: 28px;
+    padding-top: 14px;
+    border-top: 1px solid #21262d;
+    font-size: 12px;
+    color: #484f58;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">RETRO<span>CISOR</span></div>
+  <div id="connBadge">
+    <div class="dot"></div>
+    <span>Conectando...</span>
+  </div>
+</header>
+
+<div id="statusBar">
+  <span class="label">Status:</span>
+  <span id="statusVal">—</span>
+</div>
+
+<div class="section-title">Energia</div>
+<div class="grid">
+  <div class="card" id="card-tensao">
+    <div class="card-label">Tensão</div>
+    <div class="card-value" id="val-tensao">—</div>
+    <div class="card-unit">V</div>
+  </div>
+  <div class="card" id="card-corrente">
+    <div class="card-label">Corrente</div>
+    <div class="card-value" id="val-corrente">—</div>
+    <div class="card-unit">A</div>
+  </div>
+  <div class="card" id="card-potencia">
+    <div class="card-label">Potência</div>
+    <div class="card-value" id="val-potencia">—</div>
+    <div class="card-unit">W</div>
+  </div>
+  <div class="card" id="card-pwm">
+    <div class="card-label">PWM</div>
+    <div class="card-value" id="val-pwm">—</div>
+    <div class="card-unit">%</div>
+  </div>
+</div>
+
+<div class="section-title">Sensores</div>
+<div class="grid">
+  <div class="card" id="card-temperatura">
+    <div class="card-label">Temperatura</div>
+    <div class="card-value" id="val-temperatura">—</div>
+    <div class="card-unit">°C</div>
+  </div>
+  <div class="card" id="card-gas">
+    <div class="card-label">Gás H₂</div>
+    <div class="card-value" id="val-gas">—</div>
+    <div class="card-unit">ppm</div>
+  </div>
+  <div class="card" id="card-nivel">
+    <div class="card-label">Nível</div>
+    <div class="card-value" id="val-nivel">—</div>
+    <div class="card-unit">cm</div>
+  </div>
+  <div class="card" id="card-vazao">
+    <div class="card-label">Fluxo</div>
+    <div class="card-value" id="val-vazao">—</div>
+    <div class="card-unit">L/min</div>
+  </div>
+</div>
+
+<div class="section-title">Produção</div>
+<div class="grid">
+  <div class="card">
+    <div class="card-label">Água captada</div>
+    <div class="card-value" id="val-vol_captado">—</div>
+    <div class="card-unit">L</div>
+  </div>
+  <div class="card">
+    <div class="card-label">H₂ estimado</div>
+    <div class="card-value" id="val-h2">—</div>
+    <div class="card-unit">L</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Tempo operando</div>
+    <div class="card-value" id="val-tempo">—</div>
+    <div class="card-unit">s</div>
+  </div>
+</div>
+
+<footer>Retrocisor v3.0 · Firebase Firestore · leituras/atual</footer>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const app = initializeApp({
+    apiKey:     "AIzaSyAVyz6kQk5IfZXEWZ69PisA8rXWLW2mCn8",
+    authDomain: "retrocisor-de-agua-cinza.firebaseapp.com",
+    projectId:  "retrocisor-de-agua-cinza"
+  });
+
+  const db = getFirestore(app);
+  const badge    = document.getElementById('connBadge');
+  const badgeTxt = badge.querySelector('span');
+
+  // helper: pega valor de campo Firestore (doubleValue, integerValue, stringValue)
+  function val(field) {
+    if (!field) return null;
+    return field.doubleValue ?? field.integerValue ?? field.stringValue ?? null;
+  }
+
+  function set(id, v, decimals = 1) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = v !== null && v !== undefined ? (typeof v === 'number' ? v.toFixed(decimals) : v) : '—';
+  }
+
+  function alertCard(id, value, warnLimit, dangerLimit) {
+    const card = document.getElementById(id);
+    if (!card) return;
+    card.classList.remove('warn', 'danger');
+    if (value >= dangerLimit) card.classList.add('danger');
+    else if (value >= warnLimit) card.classList.add('warn');
+  }
+
+  function atualizar(d) {
+    // status
+    const status = val(d.status) ?? '—';
+    document.getElementById('statusVal').textContent = status;
+
+    // energia
+    set('val-tensao',   val(d.tensao),   2);
+    set('val-corrente', val(d.corrente), 2);
+    set('val-potencia', val(d.potencia), 1);
+    set('val-pwm',      val(d.pwm),      0);
+
+    // sensores
+    const temp = val(d.temperatura);
+    const gas  = val(d.gas);
+    const nivel = val(d.nivel);
+    const vazao = val(d.vazao);
+
+    set('val-temperatura', temp, 1);
+    set('val-gas',         gas,  0);
+    set('val-nivel',       nivel,1);
+    set('val-vazao',       vazao,2);
+
+    // alertas visuais
+    if (temp  !== null) alertCard('card-temperatura', temp,  60, 80);
+    if (gas   !== null) alertCard('card-gas',         gas,  2000, 3000);
+    if (nivel !== null) alertCard('card-nivel',       nivel, 5,  2);
+
+    // produção
+    set('val-vol_captado', val(d.vol_captado), 3);
+    set('val-h2',          val(d.h2),          4);
+    set('val-tempo',       val(d.tempo),       0);
+  }
+
+  try {
+    const docRef = doc(db, 'leituras', 'atual');
+    onSnapshot(docRef,
+      (snap) => {
+        badge.classList.add('live');
+        badgeTxt.textContent = 'Ao vivo';
+        if (snap.exists()) atualizar(snap.data());
+      },
+      (err) => {
+        console.error('Firestore:', err);
+        badgeTxt.textContent = 'Erro de conexão';
+      }
+    );
+  } catch (e) {
+    console.error(e);
+  }
+</script>
+
+</body>
+</html>
