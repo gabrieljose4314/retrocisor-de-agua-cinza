@@ -235,12 +235,6 @@
   const badge    = document.getElementById('connBadge');
   const badgeTxt = badge.querySelector('span');
 
-  // helper: pega valor de campo Firestore (doubleValue, integerValue, stringValue)
-  function val(field) {
-    if (!field) return null;
-    return field.doubleValue ?? field.integerValue ?? field.stringValue ?? null;
-  }
-
   function set(id, v, decimals = 1) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -257,35 +251,29 @@
 
   function atualizar(d) {
     // status
-    const status = val(d.status) ?? '—';
-    document.getElementById('statusVal').textContent = status;
+    document.getElementById('statusVal').textContent = d.status ?? '—';
 
     // energia
-    set('val-tensao',   val(d.tensao),   2);
-    set('val-corrente', val(d.corrente), 2);
-    set('val-potencia', val(d.potencia), 1);
-    set('val-pwm',      val(d.pwm),      0);
+    set('val-tensao',   d.tensao,   2);
+    set('val-corrente', d.corrente, 2);
+    set('val-potencia', d.potencia, 1);
+    set('val-pwm',      d.pwm,      0);
 
     // sensores
-    const temp = val(d.temperatura);
-    const gas  = val(d.gas);
-    const nivel = val(d.nivel);
-    const vazao = val(d.vazao);
-
-    set('val-temperatura', temp, 1);
-    set('val-gas',         gas,  0);
-    set('val-nivel',       nivel,1);
-    set('val-vazao',       vazao,2);
+    set('val-temperatura', d.temperatura, 1);
+    set('val-gas',         d.gas,         0);
+    set('val-nivel',       d.nivel,       1);
+    set('val-vazao',       d.vazao,       2);
 
     // alertas visuais
-    if (temp  !== null) alertCard('card-temperatura', temp,  60, 80);
-    if (gas   !== null) alertCard('card-gas',         gas,  2000, 3000);
-    if (nivel !== null) alertCard('card-nivel',       nivel, 5,  2);
+    if (d.temperatura != null) alertCard('card-temperatura', d.temperatura, 60, 80);
+    if (d.gas         != null) alertCard('card-gas',         d.gas,        2000, 3500);
+    if (d.nivel       != null) alertCard('card-nivel',       d.nivel,       5,   2);
 
     // produção
-    set('val-vol_captado', val(d.vol_captado), 3);
-    set('val-h2',          val(d.h2),          4);
-    set('val-tempo',       val(d.tempo),       0);
+    set('val-vol_captado', d.vol_captado, 3);
+    set('val-h2',          d.h2,          4);
+    set('val-tempo',       d.tempo,       0);
   }
 
   try {
